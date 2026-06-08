@@ -1,0 +1,20 @@
+name = "sitewise"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Workers AI — the default inference provider.
+[ai]
+binding = "AI"
+
+# KV namespace for corpus + per-site config + rate counters.
+# Create it once with:  wrangler kv namespace create SITEWISE_KV
+# then paste the returned id below.
+[[kv_namespaces]]
+binding = "SITEWISE_KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+[vars]
+# Optional overrides. The shared secret is NOT set here — it is a secret:
+#   wrangler secret put SITEWISE_SECRET
+MODEL = "@cf/meta/llama-3.1-8b-instruct"
+RATE_LIMIT = "20"

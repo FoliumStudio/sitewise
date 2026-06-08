@@ -1,0 +1,15 @@
+{
+  "name": "sitewise-worker",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Cloudflare Worker for the Sitewise WordPress plugin — grounded on-page chat.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

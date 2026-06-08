@@ -1,0 +1,25 @@
+.idea
+.vscode
+
+.DS_Store
+*/.DS_Store
+Thumbs.db
+*/Thumbs.db
+
+.sass-cache/
+phpcs.xml
+
+# build output (never shipped, never committed)
+dist/
+build/
+# note: scripts/ IS tracked (sync-folium-ui.sh etc.) but excluded from the
+# wp.org zip via .distignore.
+
+# Cloudflare Worker deps + secrets
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars
+.env
+
+# local scratch / working notes
+to-add or fix/

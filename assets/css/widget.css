@@ -1,0 +1,136 @@
+/*!
+ * Sitewise chat widget — Folium UI ".sww-*" design language (front-end build).
+ * Self-contained: defines the few --fl-* tokens it needs, plus the widget +
+ * the can't-answer → call-back handoff form.
+ */
+
+.sww-root {
+	/* tokens this widget relies on */
+	--fl-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--fl-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	--fl-ease: cubic-bezier(.2,.6,.2,1);
+	--fl-fast: 120ms;
+	--fl-med: 200ms;
+
+	/* widget palette (overridable via --sww-accent set inline by PHP) */
+	--sww-accent: #1f7a3c;
+	--sww-bg: #ffffff;
+	--sww-surface: #f6f5f1;
+	--sww-ink: #1a1c1e;
+	--sww-ink-2: #5c6066;
+	--sww-line: #e7e3d7;
+	--sww-bot: #f1efe8;
+
+	position: fixed;
+	z-index: 99999;
+	font-family: var(--fl-sans);
+}
+.sww-root[data-wtheme="dark"] {
+	--sww-bg: #1a1d20; --sww-surface: #23272c; --sww-ink: #ececdf;
+	--sww-ink-2: #a2a6a6; --sww-line: #30353b; --sww-bot: #262b30;
+}
+.sww-root[data-pos="br"] { right: 18px; bottom: 18px; }
+.sww-root[data-pos="bl"] { left: 18px; bottom: 18px; }
+
+/* inline (shortcode) mode: not fixed, flows in the page */
+.sww-root.sww-inline { position: relative; right: auto; bottom: auto; }
+
+/* launcher */
+.sww-launch {
+	width: 56px; height: 56px; border: 0; cursor: pointer; padding: 0;
+	background: var(--sww-accent); color: #fff;
+	display: grid; place-content: center; border-radius: 50%;
+	box-shadow: 0 6px 22px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.14);
+	transition: transform var(--fl-fast) var(--fl-ease);
+}
+.sww-launch:hover { transform: translateY(-2px); }
+.sww-launch:active { transform: translateY(0); }
+.sww-launch svg { width: 25px; height: 25px; }
+.sww-launch .ic-close { display: none; }
+.sww-root.is-open .sww-launch .ic-chat { display: none; }
+.sww-root.is-open .sww-launch .ic-close { display: block; }
+
+/* panel */
+.sww-panel {
+	position: absolute; bottom: 70px;
+	width: 340px; max-width: calc(100vw - 36px); height: 460px; max-height: calc(100vh - 120px);
+	background: var(--sww-bg); color: var(--sww-ink);
+	border: 1px solid var(--sww-line); border-radius: 16px; overflow: hidden;
+	box-shadow: 0 16px 50px rgba(0,0,0,.28), 0 4px 12px rgba(0,0,0,.14);
+	display: flex; flex-direction: column;
+	opacity: 0; transform: translateY(10px) scale(.98); pointer-events: none;
+	transition: opacity var(--fl-med) var(--fl-ease), transform var(--fl-med) var(--fl-ease);
+}
+.sww-root[data-pos$="l"] .sww-panel { left: 0; transform-origin: bottom left; }
+.sww-root[data-pos$="r"] .sww-panel { right: 0; transform-origin: bottom right; }
+.sww-root.is-open .sww-panel { opacity: 1; transform: none; pointer-events: auto; }
+.sww-root.sww-inline .sww-panel { position: relative; bottom: auto; opacity: 1; transform: none; pointer-events: auto; margin: 16px 0; box-shadow: none; }
+
+/* header */
+.sww-head { display: flex; align-items: center; gap: 11px; padding: 13px 15px; background: var(--sww-accent); color: #fff; flex: 0 0 auto; }
+.sww-ava { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.2); display: grid; place-content: center; flex: 0 0 auto; font-weight: 700; font-size: 13px; }
+.sww-head-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.sww-head-t b { font-size: 13.5px; font-weight: 620; line-height: 1.15; }
+.sww-head-t span { font-size: 10.5px; opacity: .82; display: flex; align-items: center; gap: 5px; }
+.sww-head-t span .d { width: 6px; height: 6px; border-radius: 50%; background: #69e08e; box-shadow: 0 0 0 2px rgba(255,255,255,.25); }
+.sww-head .x { margin-left: auto; background: none; border: 0; color: #fff; opacity: .8; cursor: pointer; width: 24px; height: 24px; display: grid; place-content: center; padding: 0; }
+.sww-head .x:hover { opacity: 1; }
+.sww-head .x svg { width: 17px; height: 17px; }
+
+/* thread */
+.sww-thread { flex: 1; overflow-y: auto; padding: 15px 14px 8px; display: flex; flex-direction: column; gap: 10px; background: var(--sww-bg); scroll-behavior: smooth; }
+.sww-thread::-webkit-scrollbar { width: 7px; } .sww-thread::-webkit-scrollbar-thumb { background: var(--sww-line); border-radius: 7px; }
+.sww-msg { max-width: 82%; font-size: 12.5px; line-height: 1.5; padding: 9px 12px; border-radius: 13px; animation: sww-in .26s var(--fl-ease) both; word-wrap: break-word; }
+.sww-msg.bot { align-self: flex-start; background: var(--sww-bot); color: var(--sww-ink); border-bottom-left-radius: 4px; }
+.sww-msg.user { align-self: flex-end; background: var(--sww-accent); color: #fff; border-bottom-right-radius: 4px; }
+.sww-msg a { color: inherit; text-decoration: underline; }
+@keyframes sww-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* typing indicator */
+.sww-typing { align-self: flex-start; display: inline-flex; gap: 4px; padding: 11px 13px; background: var(--sww-bot); border-radius: 13px; border-bottom-left-radius: 4px; }
+.sww-typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--sww-ink-2); opacity: .5; animation: sww-bounce 1.1s infinite; }
+.sww-typing i:nth-child(2){ animation-delay: .15s; } .sww-typing i:nth-child(3){ animation-delay: .3s; }
+@keyframes sww-bounce { 0%,60%,100%{ transform: translateY(0); opacity: .4; } 30%{ transform: translateY(-4px); opacity: 1; } }
+
+/* composer */
+.sww-composer { flex: 0 0 auto; border-top: 1px solid var(--sww-line); padding: 10px 12px; display: flex; align-items: center; gap: 8px; background: var(--sww-bg); }
+.sww-composer input { flex: 1; border: 1px solid var(--sww-line); background: var(--sww-surface); color: var(--sww-ink); border-radius: 999px; padding: 9px 13px; font-size: 12.5px; font-family: var(--fl-sans); outline: none; }
+.sww-composer input::placeholder { color: var(--sww-ink-2); }
+.sww-send { width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 50%; background: var(--sww-accent); color: #fff; display: grid; place-content: center; cursor: pointer; }
+.sww-send svg { width: 16px; height: 16px; }
+.sww-send:disabled { opacity: .6; cursor: default; }
+.sww-powered { text-align: center; font-size: 9.5px; color: var(--sww-ink-2); padding: 0 0 9px; background: var(--sww-bg); }
+.sww-powered b { color: var(--sww-ink); font-weight: 600; }
+
+/* ---- can't-answer → call-back handoff (rendered inside the thread) ---- */
+.sww-handoff {
+	align-self: stretch;
+	background: var(--sww-surface);
+	border: 1px solid var(--sww-line);
+	border-radius: 13px;
+	padding: 12px;
+	display: flex; flex-direction: column; gap: 8px;
+	animation: sww-in .26s var(--fl-ease) both;
+}
+.sww-handoff .hd { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; color: var(--sww-ink); font-family: var(--fl-mono); letter-spacing: .04em; text-transform: uppercase; }
+.sww-handoff .hd svg { width: 14px; height: 14px; color: var(--sww-accent); }
+.sww-handoff input, .sww-handoff textarea {
+	width: 100%; box-sizing: border-box; border: 1px solid var(--sww-line);
+	background: var(--sww-bg); color: var(--sww-ink); border-radius: 8px;
+	padding: 8px 10px; font-size: 12.5px; font-family: var(--fl-sans); outline: none;
+}
+.sww-handoff input:focus, .sww-handoff textarea:focus { border-color: var(--sww-accent); }
+.sww-handoff .row2 { display: flex; gap: 8px; }
+.sww-handoff .row2 > * { flex: 1; }
+.sww-handoff .hp { position: absolute; left: -9999px; height: 1px; width: 1px; overflow: hidden; }
+.sww-handoff button {
+	border: 0; background: var(--sww-accent); color: #fff; border-radius: 8px;
+	padding: 9px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: var(--fl-sans);
+	display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.sww-handoff button:disabled { opacity: .6; cursor: default; }
+.sww-handoff button svg { width: 14px; height: 14px; }
+.sww-handoff .alt { text-align: center; font-size: 11px; }
+.sww-handoff .alt a { color: var(--sww-accent); }
+.sww-handoff .ok { color: var(--sww-accent); font-size: 12px; text-align: center; padding: 4px 0; }
+.sww-handoff .err { color: #c23a26; font-size: 11.5px; }

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<ruleset name="Sitewise">
+	<description>Coding standards for the Sitewise plugin (slug: wp-call-me-back).</description>
+
+	<!-- What to scan -->
+	<file>.</file>
+
+	<!-- Exclude dev tooling, vendored libs, the pulled original, and build output. -->
+	<exclude-pattern>/scripts/*</exclude-pattern>
+	<exclude-pattern>/dist/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/worker/*</exclude-pattern>
+	<exclude-pattern>/_original-wp-call-me-back/*</exclude-pattern>
+	<exclude-pattern>*/js/*.min.js</exclude-pattern>
+
+	<arg value="ps"/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+
+	<!-- Target the supported runtime. -->
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.4"/>
+
+	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName"/>
+		<exclude name="WordPress.PHP.YodaConditions"/>
+	</rule>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Text domain MUST be the wp.org slug for translations to work. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wp-call-me-back"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="sitewise"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

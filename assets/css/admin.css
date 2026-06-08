@@ -1,0 +1,114 @@
+/* Sitewise admin — page-specific layout on top of Folium UI tokens. */
+
+.sitewise-admin.fl-root {
+	max-width: 920px;
+	margin-right: 20px;
+}
+.sitewise-admin .sitewise-topbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 8px 0 18px;
+}
+.sitewise-admin .sitewise-ver {
+	margin-left: auto;
+	color: var(--fl-ink-3);
+}
+.sitewise-admin .sitewise-hero {
+	margin-bottom: 22px;
+}
+
+/* Corpus status card */
+.sitewise-admin .sitewise-actions {
+	display: flex;
+	gap: 8px;
+}
+.sitewise-admin .sitewise-metrics {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 14px;
+}
+.sitewise-admin .sitewise-metric {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 14px 16px;
+	background: var(--fl-surface-2);
+	border: 1px solid var(--fl-line-2);
+	border-radius: var(--fl-r);
+}
+.sitewise-admin .sitewise-metric b {
+	font-size: 22px;
+	font-weight: 660;
+	letter-spacing: -.02em;
+}
+
+/* Small button variant if Folium UI doesn't already define it */
+.sitewise-admin .fl-btn--sm {
+	padding: 6px 10px;
+	font-size: 11.5px;
+}
+
+/* Card spacing between sections */
+.sitewise-admin .fl-card {
+	margin-bottom: 22px;
+}
+
+/* Settings sections: render WP form-table inside Folium cards.
+   Keep the native fields but soften them to match the language. */
+.sitewise-admin h2.title {
+	font-family: var(--fl-sans);
+	font-size: 19px;
+	font-weight: 640;
+	letter-spacing: -.01em;
+	color: var(--fl-ink);
+	margin: 26px 0 6px;
+	padding-top: 18px;
+	border-top: 1px solid var(--fl-line-2);
+}
+.sitewise-admin .form-table th {
+	font-family: var(--fl-sans);
+	color: var(--fl-ink);
+	font-weight: 560;
+}
+.sitewise-admin .form-table td,
+.sitewise-admin .form-table .description {
+	color: var(--fl-ink-2);
+}
+.sitewise-admin input[type="text"],
+.sitewise-admin input[type="url"],
+.sitewise-admin input[type="email"],
+.sitewise-admin textarea,
+.sitewise-admin select {
+	border-radius: var(--fl-r);
+	border-color: var(--fl-line-strong);
+}
+.sitewise-admin input:focus,
+.sitewise-admin textarea:focus,
+.sitewise-admin select:focus {
+	border-color: var(--fl-accent);
+	box-shadow: var(--fl-ring);
+	outline: none;
+}
+
+/* Pill helpers (in case the base set is minimal) */
+.sitewise-admin .fl-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--fl-mono);
+	font-size: 11px;
+	padding: 4px 9px;
+	border-radius: var(--fl-r-pill);
+	border: 1px solid var(--fl-line);
+}
+.sitewise-admin .fl-pill .fl-i { width: 13px; height: 13px; }
+.sitewise-admin .fl-pill--warn {
+	background: var(--fl-warn-soft);
+	border-color: var(--fl-warn-line);
+	color: var(--fl-warn);
+}
+
+@media (max-width: 782px) {
+	.sitewise-admin .sitewise-metrics { grid-template-columns: repeat(2, 1fr); }
+}
