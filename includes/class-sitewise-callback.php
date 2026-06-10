@@ -75,14 +75,9 @@ class Sitewise_Callback {
 	 * Register front-end assets (enqueued on demand by the shortcode/widget).
 	 */
 	public function register_assets() {
-		// filemtime versioning (dev cache-bust; static ?ver lets Cloudflare serve
-		// stale assets — see WordPress/CLAUDE.md). Switch to the constant at release.
-		$css = SITEWISE_DIR . 'assets/css/callback.css';
-		$js  = SITEWISE_DIR . 'assets/js/callback.js';
-		$css_ver = file_exists( $css ) ? (string) filemtime( $css ) : SITEWISE_VERSION;
-		$js_ver  = file_exists( $js ) ? (string) filemtime( $js ) : SITEWISE_VERSION;
-		wp_register_style( 'sitewise-callback', SITEWISE_URL . 'assets/css/callback.css', array(), $css_ver );
-		wp_register_script( 'sitewise-callback', SITEWISE_URL . 'assets/js/callback.js', array(), $js_ver, true );
+		// Version constant in release, filemtime in dev (see Sitewise::asset_ver).
+		wp_register_style( 'sitewise-callback', SITEWISE_URL . 'assets/css/callback.css', array(), Sitewise::asset_ver( SITEWISE_DIR . 'assets/css/callback.css' ) );
+		wp_register_script( 'sitewise-callback', SITEWISE_URL . 'assets/js/callback.js', array(), Sitewise::asset_ver( SITEWISE_DIR . 'assets/js/callback.js' ), true );
 	}
 
 	/**

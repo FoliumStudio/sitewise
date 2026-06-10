@@ -65,15 +65,9 @@ class Sitewise_Widget {
 	 * singular content actually uses the shortcode.
 	 */
 	public function register_assets() {
-		// filemtime versioning so each deploy is a fresh URL (a static ?ver lets
-		// Cloudflare serve stale assets ~forever — see WordPress/CLAUDE.md).
-		// Switch to SITEWISE_VERSION at wp.org release.
-		$css = SITEWISE_DIR . 'assets/css/widget.css';
-		$js  = SITEWISE_DIR . 'assets/js/widget.js';
-		$css_ver = file_exists( $css ) ? (string) filemtime( $css ) : SITEWISE_VERSION;
-		$js_ver  = file_exists( $js ) ? (string) filemtime( $js ) : SITEWISE_VERSION;
-		wp_register_style( 'sitewise-widget', SITEWISE_URL . 'assets/css/widget.css', array(), $css_ver );
-		wp_register_script( 'sitewise-widget', SITEWISE_URL . 'assets/js/widget.js', array(), $js_ver, true );
+		// Version constant in release, filemtime in dev (see Sitewise::asset_ver).
+		wp_register_style( 'sitewise-widget', SITEWISE_URL . 'assets/css/widget.css', array(), Sitewise::asset_ver( SITEWISE_DIR . 'assets/css/widget.css' ) );
+		wp_register_script( 'sitewise-widget', SITEWISE_URL . 'assets/js/widget.js', array(), Sitewise::asset_ver( SITEWISE_DIR . 'assets/js/widget.js' ), true );
 
 		if ( ! $this->is_active() ) {
 			return;

@@ -154,6 +154,25 @@ class Sitewise {
 	}
 
 	/**
+	 * Asset version string for cache-busting.
+	 *
+	 * Release (the published plugin): the semantic version constant, so users
+	 * get a clean, stable ?ver=X.Y.Z that changes on each update. Dev (WP_DEBUG):
+	 * the file's mtime, so every edit is a fresh URL — a static ?ver lets a CDN
+	 * (e.g. Cloudflare on the test site) serve stale assets ~forever. Keep
+	 * WP_DEBUG on for the test site so the dev loop stays cache-busted.
+	 *
+	 * @param string $path Absolute path to the asset file.
+	 * @return string
+	 */
+	public static function asset_ver( $path ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && file_exists( $path ) ) {
+			return (string) filemtime( $path );
+		}
+		return SITEWISE_VERSION;
+	}
+
+	/**
 	 * Persist a partial settings update (merged over current values).
 	 *
 	 * @param array $patch Keys to overwrite.

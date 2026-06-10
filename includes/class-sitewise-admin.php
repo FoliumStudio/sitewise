@@ -93,10 +93,8 @@ class Sitewise_Admin {
 		if ( self::PAGE_SLUG !== $slug ) {
 			return;
 		}
-		$css = SITEWISE_DIR . 'assets/css/sitewise-app.css';
-		$js  = SITEWISE_DIR . 'assets/js/sitewise-app.js';
-		wp_enqueue_style( 'sitewise-app', SITEWISE_URL . 'assets/css/sitewise-app.css', array( 'folium-ui' ), file_exists( $css ) ? (string) filemtime( $css ) : SITEWISE_VERSION );
-		wp_enqueue_script( 'sitewise-app', SITEWISE_URL . 'assets/js/sitewise-app.js', array( 'folium-ui', 'folium-app' ), file_exists( $js ) ? (string) filemtime( $js ) : SITEWISE_VERSION, true );
+		wp_enqueue_style( 'sitewise-app', SITEWISE_URL . 'assets/css/sitewise-app.css', array( 'folium-ui' ), Sitewise::asset_ver( SITEWISE_DIR . 'assets/css/sitewise-app.css' ) );
+		wp_enqueue_script( 'sitewise-app', SITEWISE_URL . 'assets/js/sitewise-app.js', array( 'folium-ui', 'folium-app' ), Sitewise::asset_ver( SITEWISE_DIR . 'assets/js/sitewise-app.js' ), true );
 		wp_localize_script( 'sitewise-app', 'SitewiseData', $this->app_data() );
 	}
 

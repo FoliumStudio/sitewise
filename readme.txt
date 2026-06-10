@@ -58,6 +58,14 @@ Leave the chatbot disabled under Settings → Sitewise; the call-back form works
 = Where is my content sent? =
 In BYO mode, only to your own Cloudflare Worker. The corpus is built from public pages and stored in your uploads directory.
 
+== Screenshots ==
+
+1. The request-a-call-back widget — a floating launcher that opens an on-brand call-back form on any page.
+2. The Sitewise dashboard in the Folium admin — corpus status, recent questions, and sync at a glance.
+3. The Widget screen — skin the launcher (colour, position, copy), toggle the site-wide bubble, with a live preview.
+4. Call-back requests collected in your dashboard and emailed to you.
+5. The grounded chat assistant (preview) — answers visitors only from your own content.
+
 == Upgrade Notice ==
 
 = 4.0.0 =
