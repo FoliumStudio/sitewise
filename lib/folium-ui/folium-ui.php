@@ -187,7 +187,7 @@ class Folium_UI {
 		 *
 		 * @param string $slug The plugin slug being rendered.
 		 */
-		do_action( 'folium_ui_enqueue', $slug );
+		do_action( 'folium_ui_enqueue', $slug ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared Folium UI extension hook used across bundled suite plugins.
 	}
 
 	/**
@@ -423,7 +423,7 @@ class Folium_UI {
 		 *
 		 * @param array $catalog The catalog entries.
 		 */
-		return apply_filters( 'folium_ui_catalog', $catalog );
+		return apply_filters( 'folium_ui_catalog', $catalog ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared Folium UI extension hook used across bundled suite plugins.
 	}
 
 	/**
@@ -473,13 +473,13 @@ class Folium_UI {
 				$open = true;
 			} elseif ( $has_file ) {
 				$url  = admin_url( 'plugins.php' );
-				$note = __( 'Activate', 'default' );
+				$note = __( 'Activate', 'wp-call-me-back' );
 			} elseif ( $coming ) {
 				$url  = '';
-				$note = __( 'Coming soon', 'default' );
+				$note = __( 'Coming soon', 'wp-call-me-back' );
 			} else {
 				$url  = $c['wporg'] ?? ( $c['home'] ?? '' );
-				$note = __( 'Install', 'default' );
+				$note = __( 'Install', 'wp-call-me-back' );
 			}
 
 			$ver = $has_file && ! empty( $installed[ $file ]['Version'] ) ? 'v' . $installed[ $file ]['Version'] : '';

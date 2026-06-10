@@ -39,6 +39,14 @@ class Sitewise_Widget {
 		if ( is_admin() ) {
 			return false;
 		}
+
+		// Call-back mode (the default until the chatbot Worker is live): the
+		// floating widget is the request-a-call-back form and needs no Worker.
+		if ( 'chat' !== Sitewise::get( 'frontend_mode', 'callback' ) ) {
+			return (bool) Sitewise::get( 'callback_enabled', 1 );
+		}
+
+		// Chat mode: needs the bot enabled and a Worker to talk to.
 		if ( ! Sitewise::get( 'chat_enabled', 1 ) ) {
 			return false;
 		}
@@ -49,11 +57,44 @@ class Sitewise_Widget {
 	}
 
 	/**
-	 * Register (but do not force-enqueue) the assets.
+	 * Register the assets, and enqueue + localise them on this (canonical) hook
+	 * when the widget is needed. Enqueuing lazily from the shortcode during
+	 * `the_content` can drop the localized config in block themes (the config
+	 * script goes missing and the widget never mounts), so the decision is made
+	 * here instead: auto-inject = every page; otherwise only when the current
+	 * singular content actually uses the shortcode.
 	 */
 	public function register_assets() {
-		wp_register_style( 'sitewise-widget', SITEWISE_URL . 'assets/css/widget.css', array(), SITEWISE_VERSION );
-		wp_register_script( 'sitewise-widget', SITEWISE_URL . 'assets/js/widget.js', array(), SITEWISE_VERSION, true );
+		// filemtime versioning so each deploy is a fresh URL (a static ?ver lets
+		// Cloudflare serve stale assets ~forever — see WordPress/CLAUDE.md).
+		// Switch to SITEWISE_VERSION at wp.org release.
+		$css = SITEWISE_DIR . 'assets/css/widget.css';
+		$js  = SITEWISE_DIR . 'assets/js/widget.js';
+		$css_ver = file_exists( $css ) ? (string) filemtime( $css ) : SITEWISE_VERSION;
+		$js_ver  = file_exists( $js ) ? (string) filemtime( $js ) : SITEWISE_VERSION;
+		wp_register_style( 'sitewise-widget', SITEWISE_URL . 'assets/css/widget.css', array(), $css_ver );
+		wp_register_script( 'sitewise-widget', SITEWISE_URL . 'assets/js/widget.js', array(), $js_ver, true );
+
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( Sitewise::get( 'auto_inject', 1 ) || $this->content_has_shortcode() ) {
+			$this->enqueue();
+		}
+	}
+
+	/**
+	 * Does the current singular content use the widget shortcode?
+	 *
+	 * @return bool
+	 */
+	private function content_has_shortcode() {
+		if ( ! is_singular() ) {
+			return false;
+		}
+		$post = get_post();
+		return ( $post instanceof WP_Post )
+			&& ( has_shortcode( $post->post_content, 'sitewise' ) || has_shortcode( $post->post_content, 'site_chat_bot' ) );
 	}
 
 	/**
@@ -67,42 +108,72 @@ class Sitewise_Widget {
 
 		wp_enqueue_style( 'sitewise-widget' );
 		wp_enqueue_script( 'sitewise-widget' );
+	}
 
-		$host    = wp_parse_url( home_url(), PHP_URL_HOST );
+	/**
+	 * Build the front-end widget config.
+	 *
+	 * Delivered to the JS via a `data-sitewise-config` attribute on the mount
+	 * node (see mount_div), NOT wp_localize_script: the localized inline script
+	 * is unreliable in block themes when the widget is enqueued for a shortcode
+	 * page — it can be dropped, leaving the widget with no config and never
+	 * mounting. Riding the config with the mount markup is immune to that.
+	 *
+	 * @return array
+	 */
+	private function widget_config() {
+		$host     = wp_parse_url( home_url(), PHP_URL_HOST );
 		$site_key = trim( (string) Sitewise::get( 'site_key', '' ) );
+		$mode     = ( 'chat' === Sitewise::get( 'frontend_mode', 'callback' ) ) ? 'chat' : 'callback';
+		$worker   = trim( (string) Sitewise::get( 'worker_url', '' ) );
 
-		wp_localize_script(
-			'sitewise-widget',
-			'SitewiseConfig',
-			array(
-				'workerUrl' => trailingslashit( (string) Sitewise::get( 'worker_url', '' ) ) . 'chat',
-				'siteKey'   => '' !== $site_key ? $site_key : ( $host ? $host : 'default' ),
-				'siteName'  => get_bloginfo( 'name' ),
-				'colour'    => Sitewise::get( 'brand_colour', '#2563eb' ),
-				'position'  => Sitewise::get( 'launcher_pos', 'bottom-right' ),
-				'opening'   => Sitewise::get( 'opening_message', '' ),
-				'poweredBy' => (bool) Sitewise::get( 'powered_by', 1 ),
-				'contact'   => Sitewise::get( 'contact_url', home_url( '/contact/' ) ),
-				'strings'   => array(
-					'placeholder' => __( 'Type your question…', 'wp-call-me-back' ),
-					'send'        => __( 'Send', 'wp-call-me-back' ),
-					'title'       => __( 'Ask the assistant', 'wp-call-me-back' ),
-					'error'       => __( 'Something went wrong. Please try again.', 'wp-call-me-back' ),
-					'poweredBy'   => __( 'Powered by Sitewise', 'wp-call-me-back' ),
-				),
-				'handoff'   => $this->handoff_config(),
-			)
+		return array(
+			'mode'      => $mode,
+			'workerUrl' => '' !== $worker ? trailingslashit( $worker ) . 'chat' : '',
+			'siteKey'   => '' !== $site_key ? $site_key : ( $host ? $host : 'default' ),
+			'siteName'  => get_bloginfo( 'name' ),
+			'colour'    => Sitewise::get( 'brand_colour', '#2563eb' ),
+			'position'  => Sitewise::get( 'launcher_pos', 'bottom-right' ),
+			'opening'   => Sitewise::get( 'opening_message', '' ),
+			'poweredBy' => (bool) Sitewise::get( 'powered_by', 1 ),
+			'contact'   => Sitewise::get( 'contact_url', home_url( '/contact/' ) ),
+			'strings'   => array(
+				'placeholder' => __( 'Type your question…', 'wp-call-me-back' ),
+				'send'        => __( 'Send', 'wp-call-me-back' ),
+				'title'       => __( 'Ask the assistant', 'wp-call-me-back' ),
+				'error'       => __( 'Something went wrong. Please try again.', 'wp-call-me-back' ),
+				'poweredBy'   => __( 'Powered by Sitewise', 'wp-call-me-back' ),
+			),
+			'handoff'   => $this->handoff_config( $mode ),
 		);
 	}
 
 	/**
-	 * Config for the can't-answer → call-back pivot. Enabled only when both the
-	 * handoff toggle and the call-back module are on.
+	 * A mount node carrying the widget config as a data attribute.
 	 *
+	 * @param string $type_attr Mode attribute, e.g. `data-sitewise-inline="1"`.
+	 * @return string
+	 */
+	private function mount_div( $type_attr ) {
+		return sprintf(
+			'<div class="sitewise-mount" %s data-sitewise-config="%s"></div>',
+			$type_attr,
+			esc_attr( wp_json_encode( $this->widget_config() ) )
+		);
+	}
+
+	/**
+	 * Config for the call-back form. In call-back mode it is the widget's whole
+	 * purpose, so it follows the call-back module toggle. In chat mode it is the
+	 * can't-answer pivot, gated additionally by the handoff toggle.
+	 *
+	 * @param string $mode Front-end mode ('callback' or 'chat').
 	 * @return array
 	 */
-	private function handoff_config() {
-		$enabled = Sitewise::get( 'chat_handoff', 1 ) && Sitewise::get( 'callback_enabled', 1 );
+	private function handoff_config( $mode = 'callback' ) {
+		$enabled = ( 'chat' === $mode )
+			? ( Sitewise::get( 'chat_handoff', 1 ) && Sitewise::get( 'callback_enabled', 1 ) )
+			: (bool) Sitewise::get( 'callback_enabled', 1 );
 		if ( ! $enabled ) {
 			return array( 'enabled' => false );
 		}
@@ -113,6 +184,7 @@ class Sitewise_Widget {
 			'nonce'   => wp_create_nonce( Sitewise_Callback::NONCE ),
 			'strings' => array(
 				'title'   => __( 'Arrange a call back', 'wp-call-me-back' ),
+				'intro'   => __( 'Leave your details and we will call you back.', 'wp-call-me-back' ),
 				'name'    => __( 'Your name', 'wp-call-me-back' ),
 				'phone'   => __( 'Phone number', 'wp-call-me-back' ),
 				'email'   => __( 'Email (optional)', 'wp-call-me-back' ),
@@ -138,7 +210,7 @@ class Sitewise_Widget {
 		}
 		$this->enqueue();
 		// Inline mode mounts in place; the JS reads data-sitewise-inline.
-		return '<div class="sitewise-mount" data-sitewise-inline="1"></div>';
+		return $this->mount_div( 'data-sitewise-inline="1"' );
 	}
 
 	/**
@@ -149,6 +221,7 @@ class Sitewise_Widget {
 			return;
 		}
 		$this->enqueue();
-		echo '<div class="sitewise-mount" data-sitewise-floating="1"></div>';
+		// esc_attr() is applied to the dynamic config inside mount_div().
+		echo $this->mount_div( 'data-sitewise-floating="1"' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }

@@ -89,6 +89,11 @@ class Sitewise {
 			'shared_secret'    => '',
 			'site_key'         => '',   // used in hosted mode; in BYO it can equal the worker host.
 
+			// Front-end widget mode. Until the chatbot Worker is live, the public
+			// floating widget is the request-a-call-back form (no Worker needed).
+			// Flip to 'chat' once a Worker is connected and tested.
+			'frontend_mode'    => 'callback', // 'callback' | 'chat'.
+
 			// Chatbot feature toggle + behaviour.
 			'chat_enabled'     => 1,
 			'auto_inject'      => 1,    // drop the launcher into wp_footer automatically.

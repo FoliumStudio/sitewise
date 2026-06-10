@@ -127,10 +127,12 @@ class Sitewise_Admin {
 				'strictCorpus'    => true,
 				'redirectContact' => '' !== trim( (string) $s['contact_url'] ),
 				'widget'          => array(
-					'accent'  => $s['brand_colour'],
-					'pos'     => 'bottom-left' === $s['launcher_pos'] ? 'bl' : 'br',
-					'opening' => $s['opening_message'],
-					'powered' => (bool) $s['powered_by'],
+					'accent'       => $s['brand_colour'],
+					'pos'          => 'bottom-left' === $s['launcher_pos'] ? 'bl' : 'br',
+					'opening'      => $s['opening_message'],
+					'powered'      => (bool) $s['powered_by'],
+					'autoInject'   => (bool) $s['auto_inject'],
+					'frontendMode' => 'chat' === $s['frontend_mode'] ? 'chat' : 'callback',
 				),
 			),
 			'real'    => $this->real_status( $s, $built, $key ),
@@ -169,7 +171,9 @@ class Sitewise_Admin {
 	/** Persist app state (the mappable subset) back into settings. */
 	public function ajax_save() {
 		$this->ajax_guard();
-		$raw   = isset( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ), true ) : array(); // phpcs:ignore WordPress.Security.ValidationSanitization.InputNotValidated
+		// ajax_guard() verifies the nonce; decoded fields are sanitized below.
+		$raw_json = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$raw      = '' !== $raw_json ? json_decode( $raw_json, true ) : array();
 		$patch = array();
 		if ( is_array( $raw ) ) {
 			if ( isset( $raw['widget'] ) && is_array( $raw['widget'] ) ) {
@@ -185,6 +189,12 @@ class Sitewise_Admin {
 				}
 				if ( isset( $w['powered'] ) ) {
 					$patch['powered_by'] = $w['powered'] ? 1 : 0;
+				}
+				if ( isset( $w['autoInject'] ) ) {
+					$patch['auto_inject'] = $w['autoInject'] ? 1 : 0;
+				}
+				if ( isset( $w['frontendMode'] ) ) {
+					$patch['frontend_mode'] = ( 'chat' === $w['frontendMode'] ) ? 'chat' : 'callback';
 				}
 			}
 		}

@@ -46,6 +46,7 @@ EXCLUDES=(
 	--exclude '_original-wp-call-me-back'
 	--exclude '.wordpress-org'
 	--exclude 'CONCEPT.md' --exclude 'CONCEPT.html' --exclude 'scrape.md'
+	--exclude 'roadmap.md' --exclude '*.md'
 	--exclude 'TODO.md' --exclude 'CHANGELOG.md'
 	--exclude 'Folium Suite - Standalone.html'
 	--exclude 'to-add or fix'

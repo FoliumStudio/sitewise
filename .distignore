@@ -28,13 +28,11 @@
 /CONCEPT.html
 /scrape.md
 /roadmap.md
+/*.md
 /TODO.md
 /to-do
 /CHANGELOG.md
 /Folium Suite - Standalone.html
-
-# The pulled original (reference only)
-/_original-wp-call-me-back
 
 # wp.org listing assets (published to SVN /assets by the deploy action, NOT shipped in the plugin zip)
 /.wordpress-org

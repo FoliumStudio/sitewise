@@ -102,6 +102,11 @@
 .sww-powered { text-align: center; font-size: 9.5px; color: var(--sww-ink-2); padding: 0 0 9px; background: var(--sww-bg); }
 .sww-powered b { color: var(--sww-ink); font-weight: 600; }
 
+/* ---- call-back mode: the panel body is the call-back form ---- */
+.sww-cbbody { flex: 1; overflow-y: auto; padding: 15px 14px; background: var(--sww-bg); display: flex; flex-direction: column; }
+.sww-cbbody::-webkit-scrollbar { width: 7px; } .sww-cbbody::-webkit-scrollbar-thumb { background: var(--sww-line); border-radius: 7px; }
+.sww-cbintro { font-size: 12.5px; line-height: 1.5; color: var(--sww-ink-2); margin: 0 0 12px; }
+
 /* ---- can't-answer → call-back handoff (rendered inside the thread) ---- */
 .sww-handoff {
 	align-self: stretch;

@@ -57,6 +57,7 @@
       botName: 'Ask the studio', subtitle: 'Typically replies instantly',
       opening: 'Hi! I can answer questions about our services, venues and coverage. What would you like to know?',
       placeholder: 'Ask a question…', powered: true,
+      autoInject: true, frontendMode: 'callback',
     },
   });
 
@@ -733,6 +734,24 @@ CORPUS:
         <!-- CONTROLS -->
         <div class="sw-widget-controls">
           <div class="sw-ctl">
+            <div class="sw-ctl-head"><span class="fl-eyebrow">DISPLAY</span></div>
+            <div class="sw-ctl-body">
+              <div class="sw-ctl-row">
+                <span class="fl-label">Front-end widget</span>
+                <div class="fl-seg" id="sww-mode" style="align-self:flex-start">
+                  <button data-sww-mode="callback" aria-selected="${w.frontendMode === 'callback'}">Call-back form</button>
+                  <button data-sww-mode="chat" aria-selected="${w.frontendMode === 'chat'}">Chat assistant</button>
+                </div>
+                <span class="fl-hint">Chat needs a connected Worker (Connections tab). Until then, keep Call-back.</span>
+              </div>
+              <div class="fl-row-flex" style="justify-content:space-between;gap:12px;margin-top:6px">
+                <div class="fl-row-main"><div class="fl-row-title">Show floating launcher site-wide</div><div class="fl-row-desc">Auto-adds the bubble to every page. Off = it only appears where you place the <code>[sitewise]</code> shortcode.</div></div>
+                <label class="fl-switch"><input type="checkbox" id="sww-f-autoinject" ${w.autoInject ? 'checked' : ''}/><span class="fl-track"></span><span class="fl-thumb"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="sw-ctl">
             <div class="sw-ctl-head"><span class="fl-eyebrow">BRAND COLOUR</span></div>
             <div class="sw-ctl-body">
               <div class="sw-ctl-row"><span class="fl-label">Accent</span><div class="sw-swatches">${swatches}</div></div>
@@ -882,6 +901,8 @@ CORPUS:
       if (shp) { SW.state.widget.shape = shp.getAttribute('data-sww-shape'); markSkin(); document.querySelectorAll('[data-sww-shape]').forEach(b => b.classList.toggle('is-sel', b === shp)); const r = $('#sww'); if (r) r.setAttribute('data-shape', SW.state.widget.shape); return; }
       const th = e.target.closest('[data-sww-theme]');
       if (th) { SW.state.widget.theme = th.getAttribute('data-sww-theme'); markSkin(); document.querySelectorAll('[data-sww-theme]').forEach(b => b.setAttribute('aria-selected', b === th)); rebuildWidget(); return; }
+      const md = e.target.closest('[data-sww-mode]');
+      if (md) { SW.state.widget.frontendMode = md.getAttribute('data-sww-mode'); markSkin(); document.querySelectorAll('[data-sww-mode]').forEach(b => b.setAttribute('aria-selected', b === md)); return; }
     });
 
     root.addEventListener('input', (e) => {
@@ -895,6 +916,7 @@ CORPUS:
     root.addEventListener('change', (e) => {
       if (!active()) return;
       if (e.target.id === 'sww-f-powered') { SW.state.widget.powered = e.target.checked; markSkin(); rebuildWidget(); }
+      else if (e.target.id === 'sww-f-autoinject') { SW.state.widget.autoInject = e.target.checked; markSkin(); }
     });
   };
 
@@ -934,8 +956,14 @@ CORPUS:
 
   SW.save = function () {
     post(A.save, SW.state, function (j) {
-      SW.state.dirty = false; SW.state.saved = Date.now(); SW.updateBar();
-      window.WPD.toast(j && j.success ? 'Sitewise settings saved' : 'Save failed');
+      if (j && j.success) {
+        // No toast — the Save button greys out (disabled) and the "✓ Saved"
+        // chip appears via updateBar; the button itself is the confirmation.
+        SW.state.dirty = false; SW.state.saved = Date.now(); SW.updateBar();
+      } else {
+        // Keep it dirty so the (green, clickable) button invites a retry.
+        window.WPD.toast('Save failed — please try again');
+      }
     });
   };
 

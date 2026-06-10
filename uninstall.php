@@ -24,16 +24,16 @@ wp_clear_scheduled_hook( 'sitewise_flush_sync_queue' );
 wp_clear_scheduled_hook( 'sitewise_rebuild_all' );
 
 // Generated corpus files.
-$uploads = wp_upload_dir();
-if ( ! empty( $uploads['basedir'] ) ) {
-	$dir = trailingslashit( $uploads['basedir'] ) . 'sitewise/';
-	foreach ( array( 'llms.txt', 'llms-full.txt' ) as $file ) {
-		$path = $dir . $file;
-		if ( file_exists( $path ) ) {
-			wp_delete_file( $path );
+$sitewise_uploads = wp_upload_dir();
+if ( ! empty( $sitewise_uploads['basedir'] ) ) {
+	$sitewise_dir = trailingslashit( $sitewise_uploads['basedir'] ) . 'sitewise/';
+	foreach ( array( 'llms.txt', 'llms-full.txt' ) as $sitewise_file ) {
+		$sitewise_path = $sitewise_dir . $sitewise_file;
+		if ( file_exists( $sitewise_path ) ) {
+			wp_delete_file( $sitewise_path );
 		}
 	}
-	if ( is_dir( $dir ) ) {
-		@rmdir( $dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+	if ( is_dir( $sitewise_dir ) ) {
+		@rmdir( $sitewise_dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 	}
 }

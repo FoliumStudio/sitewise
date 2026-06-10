@@ -15,15 +15,15 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-$status   = isset( $_GET['sitewise_status'] ) ? sanitize_key( wp_unslash( $_GET['sitewise_status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-$action   = esc_url( admin_url( 'admin-post.php' ) );
-$pub_types = get_post_types( array( 'public' => true ), 'objects' );
-$switcher  = class_exists( 'Folium_UI' ) ? Folium_UI::render_switcher( 'sitewise' ) : '';
+$status                 = isset( $_GET['sitewise_status'] ) ? sanitize_key( wp_unslash( $_GET['sitewise_status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$action                 = esc_url( admin_url( 'admin-post.php' ) );
+$sitewise_pub_types     = get_post_types( array( 'public' => true ), 'objects' );
+$sitewise_switcher_html = class_exists( 'Folium_UI' ) ? Folium_UI::render_switcher( 'sitewise' ) : '';
 ?>
 <div class="wrap fl-root sitewise-admin">
 
 	<div class="sitewise-topbar">
-		<?php echo $switcher; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from internal data in Folium_UI. ?>
+		<?php echo $sitewise_switcher_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from internal data in Folium_UI. ?>
 		<span class="fl-meta sitewise-ver">v<?php echo esc_html( SITEWISE_VERSION ); ?></span>
 	</div>
 
@@ -47,7 +47,7 @@ $switcher  = class_exists( 'Folium_UI' ) ? Folium_UI::render_switcher( 'sitewise
 
 	<?php
 	// Corpus status panel.
-	$built_at = ! empty( $stats['built_at'] ) ? wp_date( 'Y-m-d H:i', $stats['built_at'] ) : __( 'never', 'wp-call-me-back' );
+	$sitewise_built_at = ! empty( $stats['built_at'] ) ? wp_date( 'Y-m-d H:i', $stats['built_at'] ) : __( 'never', 'wp-call-me-back' );
 	?>
 	<div class="fl-card sitewise-status">
 		<div class="fl-card-head">
@@ -73,7 +73,7 @@ $switcher  = class_exists( 'Folium_UI' ) ? Folium_UI::render_switcher( 'sitewise
 				<div class="sitewise-metric"><span class="fl-meta"><?php esc_html_e( 'PAGES', 'wp-call-me-back' ); ?></span><b><?php echo (int) ( $stats['pages'] ?? 0 ); ?></b></div>
 				<div class="sitewise-metric"><span class="fl-meta"><?php esc_html_e( 'SIZE', 'wp-call-me-back' ); ?></span><b><?php echo esc_html( size_format( (int) ( $stats['bytes'] ?? 0 ) ) ); ?></b></div>
 				<div class="sitewise-metric"><span class="fl-meta"><?php esc_html_e( 'EST. TOKENS', 'wp-call-me-back' ); ?></span><b><?php echo esc_html( number_format_i18n( (int) ( $stats['tokens'] ?? 0 ) ) ); ?></b></div>
-				<div class="sitewise-metric"><span class="fl-meta"><?php esc_html_e( 'LAST BUILT', 'wp-call-me-back' ); ?></span><b><?php echo esc_html( $built_at ); ?></b></div>
+				<div class="sitewise-metric"><span class="fl-meta"><?php esc_html_e( 'LAST BUILT', 'wp-call-me-back' ); ?></span><b><?php echo esc_html( $sitewise_built_at ); ?></b></div>
 			</div>
 			<?php if ( ! empty( $stats['tokens'] ) && $stats['tokens'] > Sitewise_Corpus::RAG_TOKEN_THRESHOLD ) : ?>
 				<p class="fl-pill fl-pill--warn" style="margin-top:14px;display:inline-flex;"><span class="fl-i" data-ic="warn"></span> <?php esc_html_e( 'Large corpus — RAG retrieval recommended (a later release).', 'wp-call-me-back' ); ?></p>
@@ -161,10 +161,10 @@ $switcher  = class_exists( 'Folium_UI' ) ? Folium_UI::render_switcher( 'sitewise
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Include post types', 'wp-call-me-back' ); ?></th>
 				<td>
-					<?php foreach ( $pub_types as $type => $obj ) : ?>
+					<?php foreach ( $sitewise_pub_types as $type => $sitewise_post_type_obj ) : ?>
 						<label style="display:inline-block;margin-right:14px;">
 							<input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $type ); ?>" <?php checked( in_array( $type, (array) $s['post_types'], true ) ); ?> />
-							<?php echo esc_html( $obj->labels->name ); ?>
+							<?php echo esc_html( $sitewise_post_type_obj->labels->name ); ?>
 						</label>
 					<?php endforeach; ?>
 				</td>

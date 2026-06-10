@@ -11,7 +11,6 @@
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wp-call-me-back
- * Domain Path: /lang
  *
  * Copyright (C) 2014-2026 Folium Studio
  *
@@ -87,14 +86,6 @@ function sitewise_cron_schedules( $schedules ) {
 	return $schedules;
 }
 add_filter( 'cron_schedules', 'sitewise_cron_schedules' );
-
-/**
- * Load the text domain for translations.
- */
-function sitewise_load_textdomain() {
-	load_plugin_textdomain( 'wp-call-me-back', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
-}
-add_action( 'init', 'sitewise_load_textdomain' );
 
 // Boot the plugin.
 add_action( 'plugins_loaded', array( 'Sitewise', 'get_instance' ) );

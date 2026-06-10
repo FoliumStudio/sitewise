@@ -1,4 +1,4 @@
-=== Sitewise — Grounded Chat Assistant & Call-back Widget ===
+=== Sitewise ===
 Contributors: pigeonhut
 Tags: chatbot, ai, customer support, call back, assistant
 Requires at least: 6.4
@@ -16,8 +16,11 @@ Add an on-page assistant that answers only from your own content, plus the class
 
 The plugin compiles your published content into a small knowledge corpus (the `llms.txt` / `llms-full.txt` pattern) and keeps it in sync as you publish and edit. A lightweight Cloudflare Worker answers questions strictly from that corpus, and falls back to your contact page when it does not know.
 
+> **Note:** the grounded chat assistant is in preview while we finish the hosted Worker. Out of the box the public floating widget is the **request-a-call-back form** (no Worker required). Once you connect a Worker and switch the front-end to chat mode, the same launcher becomes the assistant.
+
 = What you get =
-* **Grounded chat widget** — a floating launcher (or inline `[sitewise]` shortcode) that answers from your pages only.
+* **Request-a-call-back widget** — a floating launcher (or inline `[sitewise]` shortcode) that lets visitors leave their number; submissions are stored in your dashboard and emailed to you. **This is the default front-end widget today.**
+* **Grounded chat assistant (preview)** — once a Cloudflare Worker is connected, the launcher answers from your pages only.
 * **Self-maintaining corpus** — rebuilt automatically when you publish, edit, trash, or delete content.
 * **Public `llms.txt` files** — so other AI agents can read your site too.
 * **Hand-curation where it counts** — an orientation block and an FAQ block you write once, plus a per-page "AI summary" box.
@@ -38,8 +41,8 @@ This plugin began life as **Call me back widget**. Version 4.0 keeps that call-b
 
 1. Install and activate the plugin.
 2. Go to **Sitewise** in the admin menu.
-3. **Chatbot:** deploy the bundled Cloudflare Worker (see the `worker/` folder on GitHub), paste its URL and shared secret, then click **Rebuild corpus now**. Add the floating launcher automatically, or place `[sitewise]` anywhere.
-4. **Call-back form:** keep it enabled and drop the `[sitewise_callback]` shortcode on a page, or add the sidebar widget.
+3. **Call-back form (on by default):** the floating launcher already shows a request-a-call-back form site-wide. You can also drop the inline `[sitewise]` or `[sitewise_callback]` shortcode on a page, or add the sidebar widget. Submissions appear in your dashboard and are emailed to you.
+4. **Chat assistant (preview):** deploy the bundled Cloudflare Worker (see the `worker/` folder on GitHub), paste its URL and shared secret, click **Rebuild corpus now**, then switch the front-end to chat mode — the same launcher becomes the assistant.
 
 == Frequently asked questions ==
 
@@ -58,11 +61,12 @@ In BYO mode, only to your own Cloudflare Worker. The corpus is built from public
 == Upgrade Notice ==
 
 = 4.0.0 =
-Major update: "Call me back widget" becomes Sitewise. Your call-back form is preserved as a built-in feature (enable under Settings → Sitewise → Call-back widget) and a grounded chat assistant is added. The legacy bespoke database tables and embedded reCAPTCHA are replaced by a modern, lighter implementation; review your settings after updating.
+Major update: Call me back widget becomes Sitewise. Your call-back form remains available, and a grounded chat assistant is added. Review your settings after updating.
 
 == Changelog ==
 
 = 4.0.0 =
+* NEW: the public floating widget is the request-a-call-back form by default; the grounded chat assistant ships in preview and turns on once a Worker is connected.
 * NEW: Sitewise grounded chat assistant — answers visitors from your own content via a Cloudflare Worker.
 * NEW: automatic `llms.txt` + `llms-full.txt` corpus generation, rebuilt on content changes.
 * NEW: orientation + FAQ curation blocks and a per-page "AI summary" meta box.
