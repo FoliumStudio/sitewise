@@ -187,7 +187,7 @@ class Folium_UI {
 		 *
 		 * @param string $slug The plugin slug being rendered.
 		 */
-		do_action( 'folium_ui_enqueue', $slug ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared Folium UI extension hook used across bundled suite plugins.
+		do_action( 'folium_ui_enqueue', $slug );
 	}
 
 	/**
@@ -405,17 +405,6 @@ class Folium_UI {
 				'home'   => 'https://foliumstudio.co.uk/plugins/folium-cache/',
 				'coming' => true,
 			),
-			array(
-				'id'     => 'folium-images',
-				'mark'   => 'I',
-				'name'   => 'Folium Images',
-				'tag'    => 'Media',
-				'desc'   => 'Compress, convert to WebP / AVIF, and serve images from a CDN.',
-				'stats'  => array( array( '—', 'optimised' ) ),
-				'file'   => 'folium-images/folium-images.php',
-				'home'   => 'https://foliumstudio.co.uk/plugins/folium-images/',
-				'coming' => true,
-			),
 		);
 
 		/**
@@ -423,7 +412,7 @@ class Folium_UI {
 		 *
 		 * @param array $catalog The catalog entries.
 		 */
-		return apply_filters( 'folium_ui_catalog', $catalog ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared Folium UI extension hook used across bundled suite plugins.
+		return apply_filters( 'folium_ui_catalog', $catalog );
 	}
 
 	/**
@@ -473,13 +462,13 @@ class Folium_UI {
 				$open = true;
 			} elseif ( $has_file ) {
 				$url  = admin_url( 'plugins.php' );
-				$note = __( 'Activate', 'wp-call-me-back' );
+				$note = __( 'Activate', 'wp-disable' );
 			} elseif ( $coming ) {
 				$url  = '';
-				$note = __( 'Coming soon', 'wp-call-me-back' );
+				$note = __( 'Coming soon', 'wp-disable' );
 			} else {
 				$url  = $c['wporg'] ?? ( $c['home'] ?? '' );
-				$note = __( 'Install', 'wp-call-me-back' );
+				$note = __( 'Install', 'wp-disable' );
 			}
 
 			$ver = $has_file && ! empty( $installed[ $file ]['Version'] ) ? 'v' . $installed[ $file ]['Version'] : '';
