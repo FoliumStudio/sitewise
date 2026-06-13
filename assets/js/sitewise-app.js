@@ -131,9 +131,15 @@
       : '<span class="fl-pill fl-pill--warn"><span class="fl-dot"></span> Deflected</span>';
 
     return `<div class="wpd-section" data-screen-label="Dashboard">
-      ${sectionHead('00','OVERVIEW','Dashboard',
-        'A live read on what Sitewise is answering, what it knows, and how the corpus is syncing.',
-        '<span class="fl-meta">UPDATED LIVE</span>')}
+      <div class="wpd-hero-card sw-hero fl-card">
+        <div class="wpd-hero-copy">
+          <span class="fl-eyebrow"><span class="fl-num">00</span> — SITEWISE</span>
+          <h2 class="fl-h1">Grounded answers from your own site.</h2>
+          <p class="fl-lead">A live read on what Sitewise is answering, what it knows, and how the corpus is syncing.</p>
+          <span class="fl-pill fl-pill--good"><span class="fl-dot"></span> Updated live</span>
+        </div>
+        <div class="wpd-hero-mark sw-hero-mark">S</div>
+      </div>
 
       <div class="sw-metrics">
         <div class="fl-metric">

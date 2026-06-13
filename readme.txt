@@ -4,7 +4,7 @@ Tags: chatbot, ai, customer support, call back, assistant
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 4.0.1
+Stable tag: 4.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,10 @@ In BYO mode, only to your own Cloudflare Worker. The corpus is built from public
 Major update: Call me back widget becomes Sitewise. Your call-back form remains available, and a grounded chat assistant is added. Review your settings after updating.
 
 == Changelog ==
+
+= 4.0.2 =
+* Visual refresh: the Sitewise dashboard now uses the same hero-card treatment as Cache by Folium.
+* Folium suite overview now includes the live Cache by Folium plugin with its WordPress.org link.
 
 = 4.0.1 =
 * Housekeeping: removed the placeholder "Folium Images" card from the Folium suite overview (the shared admin UI). No change to Sitewise's own features.

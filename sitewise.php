@@ -3,7 +3,7 @@
  * Plugin Name: Sitewise
  * Plugin URI: https://foliumstudio.co.uk
  * Description: A grounded on-page chat assistant that answers only from your own content, plus a built-in call-back request widget. <a href="admin.php?page=sitewise">Open Settings</a>
- * Version: 4.0.1
+ * Version: 4.0.2
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Folium Studio
@@ -28,7 +28,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'SITEWISE_VERSION', '4.0.1' );
+define( 'SITEWISE_VERSION', '4.0.2' );
 define( 'SITEWISE_SLUG', 'wp-call-me-back' );          // wp.org slug + text domain (fixed forever).
 define( 'SITEWISE_FILE', __FILE__ );
 define( 'SITEWISE_DIR', plugin_dir_path( __FILE__ ) );
